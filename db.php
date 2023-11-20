@@ -1,19 +1,41 @@
 <?php
 
-// $rows=all('students', "where `dept`='1'");
+$dsn="mysql:host=localhost;charset=utf8;dbname=school";
+$pdo=new PDO($dsn,'root','');
+// 第三種簡化方式by global 通常會把共通程式放在最上面執行(搭配function find)
+
+// $rows=all('students', "where `dept`='99'");
 
 // dd($rows);
 
-// $row=find(`students`,"where `id`='10'");
-// dd($row);
+$row=find('students',10);
+// 請注意寫法 都亂寫
+dd($row);
 
-$up=update('students',['dept'=>2,'status_code'=>'001'],['dept'=>99,'name'=>'張明珠']);
-dd($up);
+// $up=update('students',['dept'=>2,'status_code'=>'001'],['dept'=>99,'name'=>'張明珠']);
+// dd($up);
+
+// insert('dept',['code'=>'112','name'=>'織品系']);
+
+// del('dept',1);
+// del('students',['dept'=>5,'status_code'=>'001']);
+
+function pdo($db){
+	$dsn="mysql:host=localhost;charset=utf8;dbname=$db";
+	$pdo=new PDO($dsn,'root','');
+	// 第二種寫法 可以將相同的函式帶入不同的資料庫 需給予資料庫一個變數
+
+	return $pdo;
+	// 確實要記得return阿...
+}
+
 
 function all($table=null,$where='',$other=''){
 	// 在all的函式增加$table參數;預設$where為空''
-	$dsn="mysql:host=localhost;charset=utf8;dbname=school";
-	$pdo=new PDO($dsn,'root','');
+	// $dsn="mysql:host=localhost;charset=utf8;dbname=school";
+	// $pdo=new PDO($dsn,'root','');
+	$pdo=pdo('school');
+	// 所以這邊引用上面的function pdo 所以要把需要的資料庫'school'填上
 	$sql="select * from `$table`";
 
 	if(isset($table) && !empty($table)){
@@ -45,9 +67,11 @@ function all($table=null,$where='',$other=''){
 
 
 function find($table,$id){
-	$dsn="mysql:host=localhost;charset=utf8;dbname=school";
-	$pdo=new PDO($dsn,'root','');
+	// $dsn="mysql:host=localhost;charset=utf8;dbname=school";
+	// $pdo=new PDO($dsn,'root','');
 
+	global $pdo;
+	// 在這邊引用外部變數$pdo
 	$sql="select * from `$table`";
 
 	if(is_array($id)){
@@ -98,6 +122,51 @@ function update($table,$id,$cols){
 
 
 }
+
+function insert($table,$values){
+	$dsn="mysql:host=localhost;charset=utf8;dbname=school";
+	$pdo=new PDO($dsn,'root','');
+
+	$sql="insert into `$table` ";
+	$cols="(`".join("`,`",array_keys($values))."`)";
+	$vals="('".join("','",$values)."')";
+
+
+	$sql=$sql .$cols."values".$vals;
+
+	// echo $sql;
+
+	return $pdo->exec($sql);
+
+}
+
+function del($table,$id,){
+
+	// $dsn="mysql:host=localhost;charset=utf8;dbname=school";
+	// $pdo=new PDO($dsn,'root','');
+	include "pdo.php";
+	// 第一種簡化重複的方式: 把常用函式獨立一頁then使用include 
+	$sql="delete from `$table` where ";
+
+	if(is_array($id)){
+		foreach($id as $col => $value){
+			// foreach要把陣列的key value轉成需要的字串
+			$tmp[]="`$col`='$value'";
+		}
+		$sql .= join(" && ",$tmp);
+	}else if(is_numeric($id)){
+		$sql .= " `id`='$id'";
+	}else{
+		echo "錯誤:參數的資料型態必須是數字或陣列";
+	}
+
+	// echo $sql;
+
+
+	return $pdo->exec($sql);
+
+}
+
 
 
 function dd($array){
