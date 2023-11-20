@@ -6,7 +6,7 @@ dd($rows);
 
 
 function all($table=null,$where=''){
-	// 在all的函式增加$table參數
+	// 在all的函式增加$table參數;預設$where為空''
 	$dsn="mysql:host=localhost;charset=utf8;dbname=school";
 	$pdo=new PDO($dsn,'root','');
 
