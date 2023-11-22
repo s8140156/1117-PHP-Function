@@ -39,7 +39,7 @@ function all($table=null,$where='',$other=''){
 	$sql="select * from `$table`";
 
 	if(isset($table) && !empty($table)){
-		// 因為將$table參數給予null值(預設)(先佔位) 執行sql會造成fatal而無法執行
+		// 因為將$table變數給予null值(預設)(先佔位) 執行sql會造成fatal而無法執行
 		// 所以要寫判斷若有資料表而且不是空值就執行sql
 		// 若無 會有error訊息告知沒有指定資料表名稱 但這樣可以執行
 		// 在函式中增加參數,提升泛用性(用寬鬆的條件去使用, 只要放個參數、變數上去就大多數可適用)
